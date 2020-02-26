@@ -1,0 +1,24 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+.wizard-wrapper {
+  padding: 10px;
+  width: 540px;
+  margin: auto;
+  border: 1px solid black;
+}
+.step-wrapper {
+  background-color: gray;
+  padding: 20px;
+  width: 500px;
+  margin: auto;
+}
+.nav button {
+  height: 35px;
+  background-color: greenyellow;
+  margin: 10px;
+}
+.nav button:disabled {
+  background-color:lightgray;
+}
