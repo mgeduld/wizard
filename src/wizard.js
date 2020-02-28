@@ -1,15 +1,4 @@
 import React, { Component } from 'react'
-import { TextEntryStep } from './text-entry-step'
-import { MultipleChoiceStep } from './multiple-choice-step'
-import { PostStep } from './post-step'
-
-/*
-  TODO: 
-  - docs
-  - show progress
-  - enum for step types
-  - allow next to be a value
-*/
 
 export class Wizard extends Component {
   constructor(props) {
@@ -63,8 +52,18 @@ export class Wizard extends Component {
     })
   }
 
+  getNextStepId = async (dataCollectedFromStep, response) => {
+    const { currentStepConfig } = this.state
+    return typeof this.state.currentStepConfig.next === 'function'
+      ? await currentStepConfig.next(
+        dataCollectedFromStep,
+        response
+      )
+      : Promise.resolve(this.state.currentStepConfig.next)
+  }
+
   skipToNextStep = async () => {
-    const nextStepId = await this.state.currentStepConfig.next()
+    const nextStepId = await this.getNextStepId()
     this.markCurrentStepAsSeen()
     this.doStep(nextStepId)
   }
@@ -72,7 +71,7 @@ export class Wizard extends Component {
   doNextStep = async dataCollectedFromStep => {
     const { currentStepConfig } = this.state
     const response = await currentStepConfig.submit(dataCollectedFromStep)
-    const nextStepId = await currentStepConfig.next(
+    const nextStepId = await this.getNextStepId(
       dataCollectedFromStep,
       response
     )
@@ -94,22 +93,21 @@ export class Wizard extends Component {
 
   renderCurrentStep = () => {
     const { currentStepConfig, currentStepEnteredData } = this.state
-    const { metadata, config } = this.props
-    const StepComponent = {
-      'text-entry': TextEntryStep,
-      'multiple-choice': MultipleChoiceStep,
-      'post-step': PostStep
-    }[currentStepConfig.stepType]
-    return (
-      <StepComponent
-        {...currentStepConfig}
-        metadata={metadata}
-        allSteps={config}
-        cachedData={currentStepEnteredData}
-        onDataEntry={this.onDataEntry}
-        enteredData={currentStepEnteredData}
-      />
+    const { metadata, config, children } = this.props
+    const stepChild = children.find(
+      child => child.type.name === currentStepConfig.stepType
     )
+    const props = {
+      ...currentStepConfig,
+      metadata,
+      allSteps: config,
+      cachedData: currentStepEnteredData,
+      onDataEntry: this.onDataEntry,
+      enteredData: currentStepEnteredData
+    }
+    const StepComponent = React.cloneElement(stepChild, props)
+
+    return StepComponent
   }
 
   render = () => {
@@ -122,10 +120,17 @@ export class Wizard extends Component {
       skipToNextStep
     } = this
 
+    const { showProgress, config } = this.props
     const { allEnteredData, currentStepConfig } = this.state
+    const currentStepIndex = config.indexOf(currentStepConfig) + 1
 
     return (
       <div className="wizard-wrapper">
+        {showProgress && (
+          <div className="progress">
+            step {currentStepIndex} of {config.length}
+          </div>
+        )}
         <div className="step">{renderCurrentStep()}</div>
         <div className="nav">
           <button

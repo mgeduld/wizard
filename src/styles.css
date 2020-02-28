@@ -22,3 +22,7 @@
 .nav button:disabled {
   background-color:lightgray;
 }
+.progress {
+  color: #666;
+  margin-bottom: 10px;
+}

@@ -2,7 +2,7 @@ export const dogWizardConfig = () => {
   return [
     {
       stepId: '1',
-      stepType: 'multiple-choice',
+      stepType: 'MultipleChoiceStep',
       title: "What's your favorite hobby?",
       defaultValue: 'fetching',
       options: [
@@ -16,7 +16,7 @@ export const dogWizardConfig = () => {
     {
       stepId: '2',
       canSkip: true,
-      stepType: 'text-entry',
+      stepType: 'TextEntryStep',
       title: "What is your owner's name",
       // data will be whatever is collected from the user
       submit: async data => await Promise.resolve('foo'),
@@ -28,7 +28,7 @@ export const dogWizardConfig = () => {
     },
     {
       stepId: '3',
-      stepType: 'multiple-choice',
+      stepType: 'MultipleChoiceStep',
       title: 'What kind of food do you like?',
       defaultValue: 'wet',
       options: [
@@ -36,11 +36,12 @@ export const dogWizardConfig = () => {
         { label: 'wet', value: 'wet' }
       ],
       submit: async data => await Promise.resolve('foo'),
-      next: async (data, response) => await Promise.resolve('4')
+      // cn be scalar value or async function
+      next: '4' // async (data, response) => await Promise.resolve('4')
     },
     {
       stepId: '4',
-      stepType: 'post-step',
+      stepType: 'PostStep',
       text: 'Thank you!',
       next: null
     }

@@ -2,7 +2,7 @@ export const catWizardConfig = () => {
   return [
     {
       stepId: '1',
-      stepType: 'text-entry',
+      stepType: 'TextEntryStep',
       title: 'Please answer the following question',
       label: 'What is your name?',
       // data will be whatever is collected from the user
@@ -15,7 +15,7 @@ export const catWizardConfig = () => {
     },
     {
       stepId: '2',
-      stepType: 'multiple-choice',
+      stepType: 'MultipleChoiceStep',
       title: 'What is your favorite food?',
       options: [
         { label: 'chicken', value: 'c' },
